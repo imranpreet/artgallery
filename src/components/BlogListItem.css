@@ -1,0 +1,188 @@
+.post-row {
+    display: grid;
+    /* 60% image (left) and 40% content (right) for a stronger visual presence */
+    grid-template-columns: 60% 40%;
+    gap: 56px;
+    align-items: center;
+    padding: 18px 0;
+    border-bottom: 1px solid #eee;
+    box-sizing: border-box;
+    /* allow grid items to shrink on small viewports to avoid overflow */
+    min-width: 0;
+    padding-left: 24px;
+    padding-right: 24px;
+}
+
+.post-row { opacity: 0; transform: translateY(12px); animation: postFade 700ms ease forwards; }
+
+@keyframes postFade { to { opacity: 1; transform: translateY(0); } }
+
+.post-row.reverse {
+    direction: rtl;
+}
+
+.post-row.reverse .post-content { direction: ltr; }
+
+
+.post-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    background: #fff;
+    border: 6px solid #c9a227;
+    transition: transform 0.45s ease, box-shadow 0.45s ease;
+    max-height: 70vh; /* ensure the image panel doesn't exceed viewport in snap mode */
+    box-sizing: border-box;
+}
+
+.post-image img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 64vh;
+    object-fit: cover;
+}
+
+.post-image:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 40px 80px rgba(20,20,20,0.16);
+}
+
+.post-content {
+    padding: 8px 12px;
+    box-sizing: border-box;
+    /* allows the content column to shrink inside the grid without forcing overflow */
+    min-width: 0;
+    padding-left: 28px;
+    padding-right: 28px;
+}
+
+/* ensure the image column visually reads as a golden section */
+.post-row .post-image {
+    box-shadow: none;
+}
+
+/* Featured post: golden panel on the image column only */
+.post-row.featured .post-image {
+    padding: 20px;
+    background: #fff3d6;
+    border: 8px solid #c9a227;
+    align-self: stretch;
+    min-height: 360px;
+    box-shadow: 0 10px 30px rgba(201,146,39,0.06) inset;
+}
+
+.post-meta {
+    font-size: 13px;
+    color: #b88f3a;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+}
+
+.post-title {
+    font-family: 'Playfair Display', serif;
+    /* responsive heading size: smaller on mobile, larger on desktop */
+    font-size: clamp(1.8rem, 5.2vw, 3.6rem);
+    line-height: 1.04;
+    margin-bottom: 12px;
+    letter-spacing: -0.15px;
+    /* safe wrapping rules to prevent overflow */
+    word-wrap: break-word;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    hyphens: auto;
+    /* ensure the title can shrink and wrap inside its container */
+    min-width: 0;
+}
+
+.post-title a { color: #111; }
+
+/* Word-by-word reveal for title */
+.post-title .word {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 350ms ease-out, transform 350ms ease-out;
+    /* stagger based on word index, starts after meta */
+    transition-delay: calc(var(--w) * 40ms + 260ms);
+}
+
+/* ensure individual word spans can break if needed to avoid clipping */
+.post-title .word { white-space: normal; }
+
+.scroll-animate.visible .post-title .word {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.post-excerpt {
+    color: #666;
+    line-height: 1.8;
+    margin-bottom: 24px;
+}
+
+
+.post-excerpt .word {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 320ms ease-out, transform 320ms ease-out;
+    /* stagger based on word index — starts after title finishes */
+    transition-delay: calc(var(--w) * 25ms + 700ms);
+}
+
+.scroll-animate.visible .post-excerpt .word {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.post-readmore {
+    display: inline-block;
+    color: #111;
+    border-bottom: 2px solid #111;
+    padding-bottom: 3px;
+    font-weight: 600;
+}
+
+/* Reveal children in sequence when the parent wrapper (.scroll-animate) becomes visible */
+.scroll-animate .post-row {
+    opacity: 1; /* post-row itself is visible immediately when wrapper is visible */
+    animation: none; /* disable the earlier postFade so children control reveal */
+}
+
+.scroll-animate .post-row .post-meta,
+.scroll-animate .post-row .post-title,
+.scroll-animate .post-row .post-excerpt,
+.scroll-animate .post-row .post-readmore,
+.scroll-animate .post-row .post-image {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 500ms ease-out, transform 500ms ease-out;
+}
+
+/* staggered reveal — each line appears after the previous */
+.scroll-animate.visible .post-row .post-image   { transition-delay: 0ms;   opacity: 1; transform: translateY(0); }
+.scroll-animate.visible .post-row .post-meta    { transition-delay: 120ms; opacity: 1; transform: translateY(0); }
+.scroll-animate.visible .post-row .post-title   { transition-delay: 260ms; opacity: 1; transform: translateY(0); }
+.scroll-animate.visible .post-row .post-excerpt { transition-delay: 420ms; opacity: 1; transform: translateY(0); }
+.scroll-animate.visible .post-row .post-readmore{ transition-delay: 580ms; opacity: 1; transform: translateY(0); }
+
+@media (max-width: 900px) {
+    .post-row { grid-template-columns: 1fr; }
+    .post-row.reverse { direction: ltr; }
+    /* On mobile make the golden border appear top and bottom instead of sides */
+    .post-image {
+        /* keep gold border on mobile as well (all sides) */
+        border: 8px solid #c9a227;
+        padding: 14px;
+    }
+    .post-image img { max-height: 420px; width: 100%; height: auto; }
+    .post-content { padding-left: 12px; padding-right: 12px; }
+    .post-row { padding-left: 12px; padding-right: 12px; }
+}
+
+/* When inside a snap item, ensure content is vertically centered and doesn't overflow */
+.snap-item .post-row { padding: 12px 0; }
+.snap-item .post-content { padding: 8px 12px; }
